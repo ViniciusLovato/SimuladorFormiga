@@ -1,193 +1,124 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.lang.Thread;
 
 public class Simulator
 {
-    // Map where the ants will stay
-    Field f;
-
-    // Ants
-    ArrayList<Ant> ants;
-    int colonySize;
-    // Lifetime of the ants
-    int ttl;
-
-    int xcolony, ycolony;
+	// Field size
+    private int fieldWidth;
+    private int fieldHeight;
     
-    
+	// Ants
+    ArrayList<Ant> swarm;
+	// Colony
+	Colony colony;
+	// Leaf
+	Leaf leaf;
+	
     // Simple Constructor with default values
     public Simulator()
-    {
-	this.ttl = 200;
-	this.xcolony = 0;
-	this.ycolony = 0;
-	f = new Field();
-        f.setColony(xcolony, ycolony);
-        f.setLeaf((int) Math.round(Math.random()*(f.getWidth() - 1)), (int) Math.round(Math.random()*(f.getHeight() - 1)));
+    {	
+		setFieldSize(30, 30);
+		colony = new Colony();
+		leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
+		swarm = new ArrayList<Ant>();
 
-	// Colony size (number of ants)
-	this.colonySize = 10;
-
-	ants = new ArrayList<Ant>();
+		for(int i = 0; i < colony.getSize(); i++){
+			// Add it to the list
+			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
+		}
     }
 
     // Constructor 
-    public Simulator(int width, int height, int xcolony, int ycolony, int colonySize, int ttl)
+    public Simulator(int width, int height, int xcolony, int ycolony, int colonySize, int antTtl)
     {
-	this.ttl = ttl;
-	this.xcolony = 0;
-	this.ycolony = 0;
-	f = new Field(width, height);
-        f.setColony(xcolony, ycolony);
-        f.setLeaf( (int) Math.random()*f.getWidth(), (int) Math.random()*f.getHeight());
-
-	// Colony size (number of ants)
-	this.colonySize = colonySize;
-
-	ants = new ArrayList<Ant>();
+		setFieldSize(width, height);
+        colony = new Colony(xcolony, ycolony, colonySize);
+        leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
+		swarm = new ArrayList<Ant>();
+		
+		for(int i = 0; i < colony.getSize(); i++){
+			// Add it to the list
+			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
+		}
     }
 
-    public void print()
-    {
-	System.out.println("Field: ");
-	f.print();
+    public void setFieldSize(int width, int height){
+    	this.fieldWidth = width;
+    	this.fieldHeight = height;
     }
 
     public void run()
     {
-	int size = this.colonySize;
-	// Temporary ant
-	Ant a;
-	// While there is more ants to be added
-	do
-	{
-	    // Create a new ant
-	    a = new Ant(this.xcolony, this.ycolony, this.ttl);
-	    // Add it to the list
-	    this.ants.add(a);
-	    // While it still alive
-	    while(a.isAlive())
-	    {
-		// move
-		a.move(f);
-		a.updateScore(f);
-	    }
-	    // print score
-	    a.print();
-
-	    // Decreasing the number of ants
-	    size--;
-	    System.out.println("size: " + size);
-	}while(size > 0);
-    }
-
-
-    // Function that replays the movement of a specific ant
-    public void replay(int index)
-    {
-	if(index < this.ttl-1)
-	{
-	    ArrayList<Integer> movement = this.ants.get(index).getMovementArray();
-
-	    // Getting the colony position
-	    int xreplay = this.xcolony;
-	    int yreplay = this.ycolony;
-
-	    for(Integer i : movement)
-	    {
-		// Parsing the movement
-		if(i == 0)
-		    xreplay += 1;
-		else if(i == 1)
-		    xreplay -= 1;
-		else if(i == 2)
-		    yreplay += 1;
-		else if(i == 3)
-		    yreplay -= 1;
-
-		// Setting the ant position
-		f.setAnt(xreplay, yreplay);
-		// Printing the field
-		f.print();
-
-		// Waiting  400ms
-		try{
-		    Thread.sleep(400);
-		}catch(InterruptedException ex)
-		{
-		    Thread.currentThread().interrupt();
+		for(Ant ant : this.swarm){
+			while(ant.isAlive()){
+				// move
+				ant.move(fieldWidth, fieldHeight);
+				checkScore(ant);				
+			}				
 		}
-	    }
-	}
-	// Invalid index 
-	else
-	{
-	    System.out.println("Invalid index!");
-	}
+		summary();
     }
 
-    // Function test the environment with one ant
-    // This function only should be used for debug
-    public void step()
-    {
-	// Create a new ant
-	Ant a = new Ant(this.xcolony, this.ycolony, this.ttl);
-
-	// While it still alive
-	while(a.isAlive())
-	{
-	    // move
-	    a.move(f);
-	    a.updateScore(f);
-	    f.print();
-
-	    try{
-		Thread.sleep(250);
-	    }catch(InterruptedException ex)
-	    {
-		Thread.currentThread().interrupt();
-	    }
+	// Used to generate a random position to set the leaf or the colony
+	private int getRandomPosition(int max){
+		return (int) Math.round(Math.random()*(max) - 1);
 	}
-	// print score
-	a.print();
-    }
+	
+	// print the summary that contains the ants' score
+	private void summary(){
+		System.out.println("Summary: Score");
+		for(Ant ant : swarm){
+			System.out.print(ant.getScore() + " ");	
+		}
+		System.out.println();	
+	}
+
+	// check whether or not the ant has eaten a leaf
+	private void checkScore(Ant ant){
+		if( (ant.getPosX() == this.leaf.getPosX()) && (ant.getPosY() == this.leaf.getPosY()) ){
+			ant.increaseScore(1);
+		}
+	}
 
     public static void main(String Args[])
     {
-	Simulator s1 = new Simulator();
+		Simulator simulator = new Simulator();
 
-	s1.run();
+		simulator.run();
+		// Terminal
+		// Available commands: 
+		// quit 
+		// replay n - shows the movement of ant which index is n
+		String command;
+		Scanner terminalInput = new Scanner(System.in);
 
-	// Terminal
-	// Available commands: 
-	// quit 
-	// replay n - shows the movement of ant which index is n
+		
+		// do
+		// {
+		// 	// Prompt
+		// 	System.out.println("## Terminal ##");
+		// 	System.out.println("Available Commands: quit, replay");
+		// 	System.out.print("You shall enter your command: ");
 
-	String command;
-	Scanner terminalInput = new Scanner(System.in);
+		// 	// Reading command
+		// 	command = terminalInput.nextLine();
 
-	do
-	{
-	    // Prompt
-	    System.out.println("## Terminal ##");
-	    System.out.println("Available Commands: quit, replay");
-	    System.out.print("Please enter your command: ");
-
-	    // Reading command
-	    command = terminalInput.nextLine();
-
-	    // Parsing the command
-	    if(command.equals("replay"))
-	    {
-		// Reading the parameters of the command
-		System.out.print("REPLAY Command: Please enter the index: ");
-		command = terminalInput.nextLine();
-		int index = Integer.parseInt(command);
-		s1.replay(index);
-	    }
+		// 	// Parsing the command
+		// 	if(command.equals("replay"))
+		// 	{
+		// 		// Reading the parameters of the command
+		// 		System.out.print("REPLAY Command: Please enter the index: ");
+		// 		command = terminalInput.nextLine();
+		// 		int index = Integer.parseInt(command);
+		// 		simulator.replay(index);
+		// 	}
+		// }
+		// while(!command.equals("quit"));
+		System.out.println("Thank you");
 	}
-	while(!command.equals("quit"));
-	System.out.println("Thank you");
-    }
+
+
 }
+
+
+
