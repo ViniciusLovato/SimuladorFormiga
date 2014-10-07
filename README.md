@@ -9,5 +9,5 @@
 
 ### Contribution guidelines ###
 * Para desenvolver uma nova funcionalidade crie uma nova branch com nome sugestivo
-** Apos as modificações e testes faça um pedido de merge e o código será colocado para review por algum outro membro
-** Após o revisão do código faça o merge com a master e remova a branch antiga
+* Apos as modificações e testes faça um pedido de merge e o código será colocado para review por algum outro membro
+* Após o revisão do código faça o merge com a master e remova a branch antiga
