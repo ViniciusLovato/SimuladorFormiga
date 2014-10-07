@@ -6,9 +6,9 @@ public class Colony {
 	private int colonySize;
 
 
-	public Colony (){
+	public Colony (int colonySize){
 		setPosition(0, 0);
-		setSize(10);
+		setSize(colonySize);
 	}
 
 	public Colony (int posx, int posy, int colonySize){
