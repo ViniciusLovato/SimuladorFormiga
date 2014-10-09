@@ -13,13 +13,13 @@ bins = linspace(0, maxValue, maxValue + 1);
 subplot(2,2,1);
 hist(x16, bins);
 title("Histograma 16 samples");
-%configureHistogram(maxValue);
+configureHistogram(maxValue);
 
 % Formatting first histogram
 subplot(2,2,2);
 hist(x64, bins);
 title("Histograma 64 samples");
-%configureHistogram(maxValue);
+configureHistogram(maxValue);
 
 % Formatting first histogram
 subplot(2,2,3);
