@@ -20,7 +20,6 @@ public class Simulator
 	ArrayList<Ant> tournament;
 
     // Simple Constructor with default values
-<<<<<<< HEAD
 	public Simulator()
 	{	
 		setFieldSize(15, 15);
@@ -29,16 +28,6 @@ public class Simulator
 		swarm = new ArrayList<Ant>();
 
 		for(int i = 0; i < colony.getSize(); i++){
-=======
-    public Simulator()
-    {	
-	setFieldSize(15, 15);
-	colony = new Colony(1000);
-	leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
-	swarm = new ArrayList<Ant>();
-
-	for(int i = 0; i < colony.getSize(); i++){
->>>>>>> b4a4496c50696f00204c3e84b73bb7de3b5d48db
 	    // Add it to the list
 			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
 		}
@@ -213,39 +202,32 @@ public class Simulator
 
 		simulator.run();
 
-<<<<<<< HEAD
-    String command;
-    Scanner terminalInput = new Scanner(System.in);
-=======
-	simulator.tournament(16);
-	simulator.tournament(64);
-	simulator.tournament(128);
-	simulator.tournament(512);
->>>>>>> b4a4496c50696f00204c3e84b73bb7de3b5d48db
+        String command;
+        Scanner terminalInput = new Scanner(System.in);
 
-    do
-    {
-        // Prompt
-        System.out.println("## Terminal ##");
-        System.out.println("Available Commands: quit, t");
-        System.out.print("Please enter your command: ");
-
-        // Reading command
-        command = terminalInput.nextLine();
-
-        // Parsing the command
-        if(command.equals("t"))
+        do
         {
-        // Reading the parameters of the command
-            System.out.print("Tournament Command: Please enter the size: ");
+            // Prompt
+            System.out.println("## Terminal ##");
+            System.out.println("Available Commands: quit, t");
+            System.out.print("Please enter your command: ");
+
+           // Reading command
             command = terminalInput.nextLine();
-            int size = Integer.parseInt(command);
-            simulator.tournament(size);
+
+           // Parsing the command
+            if(command.equals("t"))
+            {
+                  // Reading the parameters of the command
+                System.out.print("Tournament Command: Please enter the size: ");
+                command = terminalInput.nextLine();
+                int size = Integer.parseInt(command);
+                simulator.tournament(size);
+            }
         }
+        while(!command.equals("quit"));
+        System.out.println("Thank you");
     }
-    while(!command.equals("quit"));
-		System.out.println("Thank you");
-	}
 }
 
 
