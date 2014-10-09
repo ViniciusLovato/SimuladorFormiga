@@ -22,7 +22,7 @@ public class Simulator
     public Simulator()
     {	
 	setFieldSize(15, 15);
-	colony = new Colony(100);
+	colony = new Colony(1000);
 	leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
 	swarm = new ArrayList<Ant>();
 
@@ -157,10 +157,10 @@ public class Simulator
 
 	simulator.run();
 
-	simulator.tournament(2);
-	simulator.tournament(4);
-	simulator.tournament(6);
-	simulator.tournament(8);
+	simulator.tournament(16);
+	simulator.tournament(64);
+	simulator.tournament(128);
+	simulator.tournament(512);
 
 	System.out.println("Thank you");
     }
