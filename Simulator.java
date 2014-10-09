@@ -224,6 +224,13 @@ public class Simulator
                 int size = Integer.parseInt(command);
                 simulator.tournament(size);
             }
+            else if(command.equals("run")){
+                System.out.print("The following tournaments will be running: 16, 64, 128, 512");
+                simulator.tournament(16);
+                simulator.tournament(64);
+                simulator.tournament(128);
+                simulator.tournament(512);
+            }
         }
         while(!command.equals("quit"));
         System.out.println("Thank you");
