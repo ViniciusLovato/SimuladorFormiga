@@ -1,20 +1,20 @@
 % Loading the data from the files
-tournament2;
-tournament4;
-tournament6;
-tournament8;
+tournament16;
+tournament64;
+tournament128;
+tournament512;
 
 % Finding the max value between the matrices
-maxValue = max([x2(:);x4(:);x6(:);x8(:)]);
+maxValue = max([x16(:);x64(:);x128(:);x512(:)]);
 
 % Defining the bins for the histograms
 bins = linspace(0, maxValue, maxValue + 1);
 
 % Creating the histograms for each sample
-a = hist(x2, bins);
-b = hist(x4, bins);
-c = hist(x6, bins);
-d = hist(x8, bins);
+a = hist(x16, bins);
+b = hist(x64, bins);
+c = hist(x128, bins);
+d = hist(x512, bins);
 
 % Plotting a bar graph with all the bins together
 bar(bins, [a;b;c;d]')
@@ -25,7 +25,7 @@ bar(bins, [a;b;c;d]')
 title('Histograma de Torneios');
 
 % Legend
-legend("2 samples", "4 samples", "6 samples", "8 samples");
+legend("16 samples", "64 samples", "128 samples", "512 samples");
 
 % Y label
 % ylabel('Frequency');
@@ -39,4 +39,4 @@ xAxis = gca();
 set (xAxis, "XTick", [0:1:maxValue]);
 
 % Saving the image
-print('tournament.pdf', '-dpdf');
+print('sHistogram.png', '-dpng');
