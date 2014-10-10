@@ -9,6 +9,7 @@ public class Simulator
 	private int fieldWidth;
 	private int fieldHeight;
 
+    private int generation;
     // Ants
 	ArrayList<Ant> swarm;
     // Colony
@@ -31,6 +32,8 @@ public class Simulator
 	    // Add it to the list
 			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
 		}
+
+        generation = 0;
 	}
 
     // Constructor 
@@ -45,6 +48,8 @@ public class Simulator
 	    // Add it to the list
 			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
 		}
+
+        generation = 0;
 	}
 
 	public void setFieldSize(int width, int height){
@@ -152,6 +157,28 @@ public class Simulator
 		}
 	}
 
+    private void printCurrentGeneration()
+    {
+        Writer writer = null;
+        try
+        {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("generation" + generation + ".m"), "utf-8"));
+
+            writer.write("g" + generation + " = [");
+            for(Ant ant : swarm)
+            {
+                writer.write(ant.getScore() + " ");
+            } 
+            writer.write("]");
+
+            writer.close();
+        }
+        catch(Exception ex)
+        {
+        // Sorry
+        }
+    }
+
     // Function that creates a tournament to select the best ants
 	public void tournament(int sample)
 	{
@@ -196,6 +223,35 @@ public class Simulator
 
 	}
 
+    public void consolidateTournament(){
+        swarm.clear();
+        swarm = new ArrayList<Ant>(tournament);
+    }
+
+    public void newGeneration(int number){
+        generation++;
+
+        int mom;
+        int dad;
+
+        int deltaAnts = 0;
+        for(int i = 0; i < number; i++){
+            if(getRandomPosition(100) < 70){
+                mom = getRandomPosition(swarm.size());
+                dad = getRandomPosition(swarm.size());
+
+                swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad)));
+
+                deltaAnts++;
+            }
+        }
+
+        Collections.sort(this.swarm);
+        // this.swarm.removeRange(0, deltaAnts - 1);
+
+        swarm.subList(0, deltaAnts - 1).clear();
+    }
+
 	public static void main(String Args[])
 	{
 		Simulator simulator = new Simulator();
@@ -230,6 +286,21 @@ public class Simulator
                 simulator.tournament(64);
                 simulator.tournament(128);
                 simulator.tournament(512);
+            }
+            else if(command.equals("pg")){
+                simulator.printCurrentGeneration();
+            }
+            else if(command.equals("rg")){
+                System.out.print("How many generations?: ");
+                command = terminalInput.nextLine();
+                int generations = Integer.parseInt(command);
+
+                for(int i = 0; i < generations; i ++){
+                    simulator.tournament(16);
+                    simulator.consolidateTournament();
+                    simulator.newGeneration(1000);
+                    simulator.printCurrentGeneration();
+                }
             }
         }
         while(!command.equals("quit"));

@@ -30,6 +30,56 @@ public class Ant implements Comparable<Ant>
 		}	
     }
 
+    // generate a new ant using two old ants
+    public Ant(int x, int y, Ant mom, Ant dad){
+    	
+		setTtl(mom.getMovementArray().size());
+		setPosition(x, y);
+		resetScore();
+
+		this.movement = new ArrayList<Integer>(this.getTtl());
+
+    	int slice = (int) Math.round(Math.random()*(mom.getMovementArray().size() - 1));
+
+    	System.out.println("Size: " + slice);
+ 
+    	for(int i = 0; i < slice; i++){
+    		this.movement.add(mom.getMovementArray().get(i));
+    	}
+
+    	for(int i = slice; i < dad.getMovementArray().size() - 1; i++){
+    		this.movement.add(dad.getMovementArray().get(i));
+    	}
+
+    	generateMutation();
+    }
+
+    private void generateMutation(){
+
+    	double mutationChance = Math.random();
+
+    	for(Integer direction : this.getMovementArray()){
+			if(mutationChance < 0.005){
+						
+				double probability = Math.random();    
+
+				// Moving
+				if(probability <= 0.25){
+					direction = 0;
+				}
+				else if(probability > 0.25 && probability <= 0.5){
+					direction = 1;
+				}
+				else if(probability > 0.50 && probability <= 0.75){
+					direction = 2;
+				}
+				else{ //if(probability > 0.75){
+					direction = 3;
+				} 
+	    	}	
+		}
+    }
+
     @Override
 	public int compareTo(Ant ant)
 	{
