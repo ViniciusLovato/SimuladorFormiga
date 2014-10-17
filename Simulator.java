@@ -358,6 +358,7 @@ public class Simulator
 
                 for(int i = 0; i < generations; i ++){
                     simulator.tournament(16);
+                    simulator.printCleanTournament(16);
                     simulator.consolidateTournament();
                     simulator.newGeneration(1000);
                     simulator.printCurrentGeneration();
