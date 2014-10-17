@@ -44,8 +44,6 @@ public class Ant implements Comparable<Ant>
 
     	int slice = (int) Math.round(Math.random()*(mom.getMovementArray().size() - 1));
 
-    	System.out.println("Size: " + slice);
- 
     	for(int i = 0; i < slice; i++){
     		this.movement.add(mom.getMovementArray().get(i));
     	}

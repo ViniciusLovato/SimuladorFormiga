@@ -191,15 +191,15 @@ public class Simulator
 
 
     // Printing results to a file
-    private void printCleanTournamentToFile(int sample, ArrayList<Ant> cleanTournament)
+    private void printCleanTournamentToFile(ArrayList<Ant> cleanTournament)
     {
         Writer writer = null;
         try
         {	
 
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("cleanTournament" + sample + ".m"), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("cleanTournament" + generation + ".m"), "utf-8"));
 
-            writer.write("c" + sample + " = [");
+            writer.write("c" + generation + " = [");
 
             for(Ant ant : cleanTournament)
             {
@@ -286,7 +286,7 @@ public class Simulator
         swarm = new ArrayList<Ant>(tournament);
     }
 
-    public void printCleanTournament(int sample){
+    public void printCleanTournament(){
         ArrayList<Ant> cleanTournament = new ArrayList<Ant>();
 
         for(Ant ant : tournament){
@@ -294,7 +294,7 @@ public class Simulator
                 cleanTournament.add(ant);
             }
         }
-        printCleanTournamentToFile(sample, cleanTournament);
+        printCleanTournamentToFile(cleanTournament);
     }
 
     public boolean compareAnt(Ant newAnt, ArrayList<Ant> cleanTournament){
@@ -362,32 +362,35 @@ public class Simulator
                 command = terminalInput.nextLine();
                 int size = Integer.parseInt(command);
                 simulator.tournament(size);
-                simulator.printCleanTournament(size);
+                simulator.printCleanTournament();
             }
             else if(command.equals("run")){
                 System.out.print("The following tournaments will be running: 16, 64, 128, 512");
                 simulator.tournament(16);
-                simulator.printCleanTournament(16);
                 simulator.tournament(64);
-                simulator.printCleanTournament(64);
                 simulator.tournament(128);
-                simulator.printCleanTournament(128);
                 simulator.tournament(512);
-                simulator.printCleanTournament(512);
             }
             else if(command.equals("pg")){
                 simulator.printCurrentGeneration();
             }
             else if(command.equals("rg")){
+                // Number of generations
                 System.out.print("How many generations?: ");
                 command = terminalInput.nextLine();
                 int generations = Integer.parseInt(command);
 
+                // Sampling rate 
+                System.out.print("What is the tournament sampling rate?: ");
+                command = terminalInput.nextLine();
+                int sampling = Integer.parseInt(command);
+
+                simulator.printCurrentGeneration();
                 for(int i = 0; i < generations; i ++){
-                    simulator.tournament(16);
-                    simulator.printCleanTournament(16);
+                    simulator.tournament(sampling);
                     simulator.consolidateTournament();
                     simulator.newGeneration(1000);
+                    simulator.printCleanTournament();
                     simulator.printCurrentGeneration();
                 }
             }
