@@ -68,6 +68,33 @@ public class Simulator
 		summary();
 	}
 
+        public void exportAnts()
+        {
+            ArrayList<Integer> movement;
+            Writer writer = null;
+            try
+            {	
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("swarm.txt"), "utf-8"));
+
+                for(Ant ant : swarm)
+                {
+                    movement = ant.getMovementArray();
+                    for(Integer m : movement)
+                    {
+                        writer.write(m + " ");
+                    }
+                    writer.write("\n");
+                } 
+
+                writer.close();
+            }
+            catch(Exception ex)
+            {
+                // Sorry
+            }
+
+        }
+
     // Used to generate a random position to set the leaf or the colony
 	private int getRandomPosition(int max){
 		return (int) Math.round(Math.random()*(max - 1));
@@ -363,6 +390,12 @@ public class Simulator
                     simulator.newGeneration(1000);
                     simulator.printCurrentGeneration();
                 }
+            }
+            else if(command.equals("export"))
+            {
+                System.out.print("Exporting...");
+                simulator.exportAnts();
+                System.out.println("done");
             }
         }
         while(!command.equals("quit"));
