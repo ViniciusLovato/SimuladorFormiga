@@ -12,15 +12,17 @@ public class Ant implements Comparable<Ant>
     // Score
     private int score;
 
+    private int id;
     // Array that is going to save the movement history
     private ArrayList<Integer> movement;
 
     // Constructor
-    public Ant(int x, int y, int ttl)
+    public Ant(int x, int y, int ttl, int id)
     {
 		setTtl(ttl);
 		setPosition(x, y);
 		resetScore();
+		this.id = id;
 
 		this.movement = new ArrayList<Integer>(ttl);
 
@@ -31,11 +33,12 @@ public class Ant implements Comparable<Ant>
     }
 
     // generate a new ant using two old ants
-    public Ant(int x, int y, Ant mom, Ant dad){
+    public Ant(int x, int y, Ant mom, Ant dad, int id){
     	
 		setTtl(mom.getMovementArray().size());
 		setPosition(x, y);
 		resetScore();
+		this.id = id;
 
 		this.movement = new ArrayList<Integer>(this.getTtl());
 
@@ -60,7 +63,6 @@ public class Ant implements Comparable<Ant>
 
     	for(Integer direction : this.getMovementArray()){
 			if(mutationChance < 0.005){
-						
 				double probability = Math.random();    
 
 				// Moving
@@ -197,5 +199,9 @@ public class Ant implements Comparable<Ant>
 
     public void setPosY(int y){
     	this.y = y;
+    }
+
+    public int getId(){
+    	return id;
     }
 }

@@ -17,12 +17,15 @@ public class Simulator
     // Leaf
 	Leaf leaf;
 
+	private int counter;
+
     // Attributes for the Tournament Selection
 	ArrayList<Ant> tournament;
 
     // Simple Constructor with default values
 	public Simulator()
 	{	
+		counter = 0;
 		setFieldSize(15, 15);
 		colony = new Colony(1000);
 		leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
@@ -30,7 +33,7 @@ public class Simulator
 
 		for(int i = 0; i < colony.getSize(); i++){
 	    // Add it to the list
-			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
+			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
 		}
 
         generation = 0;
@@ -46,7 +49,7 @@ public class Simulator
 
 		for(int i = 0; i < colony.getSize(); i++){
 	    // Add it to the list
-			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200));
+			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
 		}
 
         generation = 0;
@@ -139,11 +142,39 @@ public class Simulator
 	{
 		Writer writer = null;
 		try
-		{
+		{	
+
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("tournament" + sample + ".m"), "utf-8"));
 
 			writer.write("x" + sample + " = [");
+			
 			for(Ant ant : tournament)
+			{
+				writer.write(ant.getScore() + " ");
+			} 
+			writer.write("]");
+
+			writer.close();
+		}
+		catch(Exception ex)
+		{
+	    // Sorry
+		}
+	}
+
+
+    // Printing results to a file
+	private void printCleanTournamentToFile(int sample, ArrayList<Ant> cleanTournament)
+	{
+		Writer writer = null;
+		try
+		{	
+
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("cleanTournament" + sample + ".m"), "utf-8"));
+
+			writer.write("c" + sample + " = [");
+			
+			for(Ant ant : cleanTournament)
 			{
 				writer.write(ant.getScore() + " ");
 			} 
@@ -228,6 +259,27 @@ public class Simulator
         swarm = new ArrayList<Ant>(tournament);
     }
 
+    public void printCleanTournament(int sample){
+    	ArrayList<Ant> cleanTournament = new ArrayList<Ant>();
+
+    	for(Ant ant : tournament){
+    		if(compareAnt(ant, cleanTournament) == false){
+    			cleanTournament.add(ant);
+    		}
+    	}
+    	printCleanTournamentToFile(sample, cleanTournament);
+    }
+
+    public boolean compareAnt(Ant newAnt, ArrayList<Ant> cleanTournament){
+    	for(Ant ant : cleanTournament){
+    		if(newAnt.getId() == ant.getId()){
+    			return true;
+    		}
+    	}
+    	return false;
+
+    }
+
     public void newGeneration(int number){
         generation++;
 
@@ -240,7 +292,7 @@ public class Simulator
                 mom = getRandomPosition(swarm.size());
                 dad = getRandomPosition(swarm.size());
 
-                swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad)));
+                swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad), idGenerator()));
 
                 deltaAnts++;
             }
@@ -250,6 +302,10 @@ public class Simulator
         // this.swarm.removeRange(0, deltaAnts - 1);
 
         swarm.subList(0, deltaAnts - 1).clear();
+    }
+
+    public int idGenerator(){
+       	return counter++;
     }
 
 	public static void main(String Args[])
@@ -279,13 +335,18 @@ public class Simulator
                 command = terminalInput.nextLine();
                 int size = Integer.parseInt(command);
                 simulator.tournament(size);
+                simulator.printCleanTournament(size);
             }
             else if(command.equals("run")){
                 System.out.print("The following tournaments will be running: 16, 64, 128, 512");
                 simulator.tournament(16);
+                simulator.printCleanTournament(16);
                 simulator.tournament(64);
+                simulator.printCleanTournament(64);
                 simulator.tournament(128);
+                simulator.printCleanTournament(128);
                 simulator.tournament(512);
+                simulator.printCleanTournament(512);
             }
             else if(command.equals("pg")){
                 simulator.printCurrentGeneration();
