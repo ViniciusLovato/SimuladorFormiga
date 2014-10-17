@@ -6,115 +6,115 @@ import java.io.*;
 public class Simulator
 {
     // Field size
-	private int fieldWidth;
-	private int fieldHeight;
+    private int fieldWidth;
+    private int fieldHeight;
 
     private int generation;
     // Ants
-	ArrayList<Ant> swarm;
+    ArrayList<Ant> swarm;
     // Colony
-	Colony colony;
+    Colony colony;
     // Leaf
-	Leaf leaf;
+    Leaf leaf;
 
-	private int counter;
+    private int counter;
 
     // Attributes for the Tournament Selection
-	ArrayList<Ant> tournament;
+    ArrayList<Ant> tournament;
 
     // Simple Constructor with default values
-	public Simulator()
-	{	
-		counter = 0;
-		setFieldSize(15, 15);
-		colony = new Colony(1000);
-		leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
-		swarm = new ArrayList<Ant>();
+    public Simulator()
+    {	
+        counter = 0;
+        setFieldSize(15, 15);
+        colony = new Colony(1000);
+        leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
+        swarm = new ArrayList<Ant>();
 
-		for(int i = 0; i < colony.getSize(); i++){
-	    // Add it to the list
-			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
-		}
+        for(int i = 0; i < colony.getSize(); i++){
+            // Add it to the list
+            this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
+        }
 
         generation = 0;
-	}
+    }
 
     // Constructor 
-	public Simulator(int width, int height, int xcolony, int ycolony, int colonySize, int antTtl)
-	{
-		setFieldSize(width, height);
-		colony = new Colony(xcolony, ycolony, colonySize);
-		leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
-		swarm = new ArrayList<Ant>();
+    public Simulator(int width, int height, int xcolony, int ycolony, int colonySize, int antTtl)
+    {
+        setFieldSize(width, height);
+        colony = new Colony(xcolony, ycolony, colonySize);
+        leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
+        swarm = new ArrayList<Ant>();
 
-		for(int i = 0; i < colony.getSize(); i++){
-	    // Add it to the list
-			this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
-		}
+        for(int i = 0; i < colony.getSize(); i++){
+            // Add it to the list
+            this.swarm.add(new Ant(colony.getPosX(), colony.getPosY(), 200, idGenerator()));
+        }
 
         generation = 0;
-	}
+    }
 
-	public void setFieldSize(int width, int height){
-		this.fieldWidth = width;
-		this.fieldHeight = height;
-	}
+    public void setFieldSize(int width, int height){
+        this.fieldWidth = width;
+        this.fieldHeight = height;
+    }
 
-	public void run()
-	{
+    public void run()
+    {
         for(Ant ant : swarm){
             fitness(ant);
         }
-		summary();
-	}
+        summary();
+    }
 
-        public void exportAnts()
-        {
-            ArrayList<Integer> movement;
-            Writer writer = null;
-            try
-            {	
-                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("swarm.txt"), "utf-8"));
+    public void exportAnts()
+    {
+        ArrayList<Integer> movement;
+        Writer writer = null;
+        try
+        {	
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("swarm.txt"), "utf-8"));
 
-                for(Ant ant : swarm)
-                {
-                    movement = ant.getMovementArray();
-                    for(Integer m : movement)
-                    {
-                        writer.write(m + " ");
-                    }
-                    writer.write("\n");
-                } 
-
-                writer.close();
-            }
-            catch(Exception ex)
+            for(Ant ant : swarm)
             {
-                // Sorry
-            }
+                movement = ant.getMovementArray();
+                for(Integer m : movement)
+                {
+                    writer.write(m + " ");
+                }
+                writer.write("\n");
+            } 
 
+            writer.close();
+        }
+        catch(Exception ex)
+        {
+            // Sorry
         }
 
+    }
+
     // Used to generate a random position to set the leaf or the colony
-	private int getRandomPosition(int max){
-		return (int) Math.round(Math.random()*(max - 1));
-	}
+    private int getRandomPosition(int max){
+        return (int) Math.round(Math.random()*(max - 1));
+    }
 
     // print the summary that contains the ants' score
-	private void summary(){
-		System.out.println("Summary: Score");
-		for(Ant ant : swarm){
-			System.out.print(ant.getScore() + " ");	
-		}
-		System.out.println();	
-	}
+    private void summary(){
+        System.out.println("Summary: Score");
+        for(Ant ant : swarm){
+            System.out.print(ant.getScore() + " ");	
+        }
+        System.out.println();	
+    }
 
     // moving ants
     private void fitness(Ant ant){
-        
+
         ant.setPosX(colony.getPosX());
         ant.setPosY(colony.getPosY());
-        
+
 
         int tmpx, tmpy;
         boolean valid;
@@ -158,62 +158,62 @@ public class Simulator
     }
 
     // check whether or not the ant has eaten a leaf
-	private void checkScore(Ant ant){
-		if( (ant.getPosX() == this.leaf.getPosX()) && (ant.getPosY() == this.leaf.getPosY()) ){
-			ant.increaseScore(1);
-		}
-	}
+    private void checkScore(Ant ant){
+        if( (ant.getPosX() == this.leaf.getPosX()) && (ant.getPosY() == this.leaf.getPosY()) ){
+            ant.increaseScore(1);
+        }
+    }
 
     // Printing results to a file
-	private void printTournamentToFile(int sample)
-	{
-		Writer writer = null;
-		try
-		{	
+    private void printTournamentToFile(int sample)
+    {
+        Writer writer = null;
+        try
+        {	
 
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("tournament" + sample + ".m"), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("tournament" + sample + ".m"), "utf-8"));
 
-			writer.write("x" + sample + " = [");
-			
-			for(Ant ant : tournament)
-			{
-				writer.write(ant.getScore() + " ");
-			} 
-			writer.write("]");
+            writer.write("x" + sample + " = [");
 
-			writer.close();
-		}
-		catch(Exception ex)
-		{
-	    // Sorry
-		}
-	}
+            for(Ant ant : tournament)
+            {
+                writer.write(ant.getScore() + " ");
+            } 
+            writer.write("]");
+
+            writer.close();
+        }
+        catch(Exception ex)
+        {
+            // Sorry
+        }
+    }
 
 
     // Printing results to a file
-	private void printCleanTournamentToFile(int sample, ArrayList<Ant> cleanTournament)
-	{
-		Writer writer = null;
-		try
-		{	
+    private void printCleanTournamentToFile(int sample, ArrayList<Ant> cleanTournament)
+    {
+        Writer writer = null;
+        try
+        {	
 
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("cleanTournament" + sample + ".m"), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("cleanTournament" + sample + ".m"), "utf-8"));
 
-			writer.write("c" + sample + " = [");
-			
-			for(Ant ant : cleanTournament)
-			{
-				writer.write(ant.getScore() + " ");
-			} 
-			writer.write("]");
+            writer.write("c" + sample + " = [");
 
-			writer.close();
-		}
-		catch(Exception ex)
-		{
-	    // Sorry
-		}
-	}
+            for(Ant ant : cleanTournament)
+            {
+                writer.write(ant.getScore() + " ");
+            } 
+            writer.write("]");
+
+            writer.close();
+        }
+        catch(Exception ex)
+        {
+            // Sorry
+        }
+    }
 
     private void printCurrentGeneration()
     {
@@ -233,53 +233,53 @@ public class Simulator
         }
         catch(Exception ex)
         {
-        // Sorry
+            // Sorry
         }
     }
 
     // Function that creates a tournament to select the best ants
-	public void tournament(int sample)
-	{
-	// Creating a tournament
-		this.tournament = new ArrayList<Ant>();
+    public void tournament(int sample)
+    {
+        // Creating a tournament
+        this.tournament = new ArrayList<Ant>();
 
-	// Creating the local sample array
-		ArrayList<Ant> selection = new ArrayList<Ant>(sample);
+        // Creating the local sample array
+        ArrayList<Ant> selection = new ArrayList<Ant>(sample);
 
-	// Sorting the array
-		Collections.sort(this.swarm);
+        // Sorting the array
+        Collections.sort(this.swarm);
 
-	// Sampling the Ants
-		for(int i = 0; i < this.swarm.size(); i++)
-		{
-	    // Sampling 
-			for(int j = 0; j < sample; j++)
-			{
-		// Adds a random ant to the sampling array
-				int random = getRandomPosition(this.swarm.size());
-				selection.add(this.swarm.get(random));
-			}
+        // Sampling the Ants
+        for(int i = 0; i < this.swarm.size(); i++)
+        {
+            // Sampling 
+            for(int j = 0; j < sample; j++)
+            {
+                // Adds a random ant to the sampling array
+                int random = getRandomPosition(this.swarm.size());
+                selection.add(this.swarm.get(random));
+            }
 
-	    // Sorting the ants
-			Collections.sort(selection);
+            // Sorting the ants
+            Collections.sort(selection);
 
-	    // Saving the best ant
-			this.tournament.add(selection.get(selection.size() - 1));
-			selection.clear();
-		}
+            // Saving the best ant
+            this.tournament.add(selection.get(selection.size() - 1));
+            selection.clear();
+        }
 
-		Collections.sort(this.tournament);
+        Collections.sort(this.tournament);
 
-		System.out.println("Tournament Summary:\nSamples: " + sample + "\nResult: ");
-		for(Ant ant : tournament)
-		{
-			System.out.print("[" + ant.getScore() + "]");
-		}
-		System.out.println("\n------------------------------------------------");
-		printTournamentToFile(sample);
+        System.out.println("Tournament Summary:\nSamples: " + sample + "\nResult: ");
+        for(Ant ant : tournament)
+        {
+            System.out.print("[" + ant.getScore() + "]");
+        }
+        System.out.println("\n------------------------------------------------");
+        printTournamentToFile(sample);
 
 
-	}
+    }
 
     public void consolidateTournament(){
         swarm.clear();
@@ -287,23 +287,23 @@ public class Simulator
     }
 
     public void printCleanTournament(int sample){
-    	ArrayList<Ant> cleanTournament = new ArrayList<Ant>();
+        ArrayList<Ant> cleanTournament = new ArrayList<Ant>();
 
-    	for(Ant ant : tournament){
-    		if(compareAnt(ant, cleanTournament) == false){
-    			cleanTournament.add(ant);
-    		}
-    	}
-    	printCleanTournamentToFile(sample, cleanTournament);
+        for(Ant ant : tournament){
+            if(compareAnt(ant, cleanTournament) == false){
+                cleanTournament.add(ant);
+            }
+        }
+        printCleanTournamentToFile(sample, cleanTournament);
     }
 
     public boolean compareAnt(Ant newAnt, ArrayList<Ant> cleanTournament){
-    	for(Ant ant : cleanTournament){
-    		if(newAnt.getId() == ant.getId()){
-    			return true;
-    		}
-    	}
-    	return false;
+        for(Ant ant : cleanTournament){
+            if(newAnt.getId() == ant.getId()){
+                return true;
+            }
+        }
+        return false;
 
     }
 
@@ -332,14 +332,14 @@ public class Simulator
     }
 
     public int idGenerator(){
-       	return counter++;
+        return counter++;
     }
 
-	public static void main(String Args[])
-	{
-		Simulator simulator = new Simulator();
+    public static void main(String Args[])
+    {
+        Simulator simulator = new Simulator();
 
-		simulator.run();
+        simulator.run();
 
         String command;
         Scanner terminalInput = new Scanner(System.in);
@@ -351,13 +351,13 @@ public class Simulator
             System.out.println("Available Commands: quit, t");
             System.out.print("Please enter your command: ");
 
-           // Reading command
+            // Reading command
             command = terminalInput.nextLine();
 
-           // Parsing the command
+            // Parsing the command
             if(command.equals("t"))
             {
-                  // Reading the parameters of the command
+                // Reading the parameters of the command
                 System.out.print("Tournament Command: Please enter the size: ");
                 command = terminalInput.nextLine();
                 int size = Integer.parseInt(command);
