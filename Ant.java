@@ -33,8 +33,8 @@ public class Ant implements Comparable<Ant>
     }
 
     // generate a new ant using two old ants
-    public Ant(int x, int y, Ant mom, Ant dad, int id){
-    	
+    public Ant(int x, int y, Ant mom, Ant dad, int id, double mutationRate)
+    {
 		setTtl(mom.getMovementArray().size());
 		setPosition(x, y);
 		resetScore();
@@ -52,29 +52,35 @@ public class Ant implements Comparable<Ant>
     		this.movement.add(dad.getMovementArray().get(i));
     	}
 
-    	generateMutation();
+    	generateMutation(mutationRate);
     }
 
-    private void generateMutation(){
+    // Function that mutates a gene using according to a rate
+    public void generateMutation(double rate){
 
-    	double mutationChance = Math.random();
+    	double mutationChance;
 
-    	for(Integer direction : this.getMovementArray()){
-			if(mutationChance < 0.005){
+    	//for(Integer direction : this.getMovementArray()){
+        for(int i = 0; i < movement.size(); i++){
+
+        	// Creating mutation rate
+        	mutationChance = Math.random();
+
+			if(mutationChance < rate){
 				double probability = Math.random();    
 
 				// Moving
 				if(probability <= 0.25){
-					direction = 0;
+					this.movement.set(i, 0);
 				}
 				else if(probability > 0.25 && probability <= 0.5){
-					direction = 1;
+					this.movement.set(i, 1);
 				}
 				else if(probability > 0.50 && probability <= 0.75){
-					direction = 2;
+					this.movement.set(i, 2);
 				}
 				else{ //if(probability > 0.75){
-					direction = 3;
+					this.movement.set(i, 3);
 				} 
 	    	}	
 		}

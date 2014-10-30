@@ -68,6 +68,11 @@ public class Simulator
         summary();
     }
 
+    public void increaseGeneration()
+    {
+    	this.generation++;
+    }
+
     public void exportAnts()
     {
         ArrayList<Integer> movement;
@@ -307,19 +312,34 @@ public class Simulator
 
     }
 
-    public void newGeneration(int number){
+	// Function that creates a new generation of ants, mutating the existing ones
+    public void mutateGeneration(double mutationRate){
+        generation++;
+
+        for(int i = 0; i < colony.getSize(); i++){
+        		swarm.get(i).generateMutation(mutationRate);
+        }
+
+        Collections.sort(this.swarm);
+    }
+
+    // Function that creates a new generation of ants, receives the crossing over rate as a parameter
+    public void newGeneration(double crossingOverRate, double mutationRate){
         generation++;
 
         int mom;
         int dad;
 
+        double random;
+
         int deltaAnts = 0;
-        for(int i = 0; i < number; i++){
-            if(getRandomPosition(100) < 70){
+        for(int i = 0; i < colony.getSize(); i++){
+        	random = Math.random();
+            if(Math.random() < crossingOverRate){
                 mom = getRandomPosition(swarm.size());
                 dad = getRandomPosition(swarm.size());
 
-                swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad), idGenerator()));
+                swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad), idGenerator(), mutationRate));
 
                 deltaAnts++;
             }
@@ -344,11 +364,13 @@ public class Simulator
         String command;
         Scanner terminalInput = new Scanner(System.in);
 
+        double mutationRate = 0.3;
+        double crossingOverRate = 0.7;
+
         do
         {
             // Prompt
             System.out.println("## Terminal ##");
-            System.out.println("Available Commands: quit, t");
             System.out.print("Please enter your command: ");
 
             // Reading command
@@ -364,17 +386,9 @@ public class Simulator
                 simulator.tournament(size);
                 simulator.printCleanTournament();
             }
-            else if(command.equals("run")){
-                System.out.print("The following tournaments will be running: 16, 64, 128, 512");
-                simulator.tournament(16);
-                simulator.tournament(64);
-                simulator.tournament(128);
-                simulator.tournament(512);
-            }
-            else if(command.equals("pg")){
-                simulator.printCurrentGeneration();
-            }
             else if(command.equals("rg")){
+                System.out.println("Mutation rate: " + mutationRate);
+                System.out.println("Crossing-over rate: " + crossingOverRate);
                 // Number of generations
                 System.out.print("How many generations?: ");
                 command = terminalInput.nextLine();
@@ -389,10 +403,92 @@ public class Simulator
                 for(int i = 0; i < generations; i ++){
                     simulator.tournament(sampling);
                     simulator.consolidateTournament();
-                    simulator.newGeneration(1000);
+                    simulator.newGeneration(crossingOverRate, mutationRate);
                     simulator.printCleanTournament();
                     simulator.printCurrentGeneration();
                 }
+            }
+            // Change mutation rate
+            else if(command.equals("cmr"))
+            {
+            	System.out.print("Change mutation rate (double): ");
+                command = terminalInput.nextLine();
+                mutationRate = Double.parseDouble(command);
+            }
+            // Change crossing-over rate
+            else if(command.equals("ccr"))
+            {
+            	System.out.print("Change crossing-over rate (double): ");
+                command = terminalInput.nextLine();
+                crossingOverRate = Double.parseDouble(command);
+            }
+            // Runnnig regerations with mutation only
+            else if(command.equals("rgmo"))
+            {
+           		System.out.println("Mutation rate: " + mutationRate);
+           		// Number of generations
+                System.out.print("How many generations?: ");
+                command = terminalInput.nextLine();
+                int generations = Integer.parseInt(command);
+
+                // Sampling rate 
+                System.out.print("What is the tournament sampling rate?: ");
+                command = terminalInput.nextLine();
+                int sampling = Integer.parseInt(command);
+
+                simulator.printCurrentGeneration();
+                for(int i = 0; i < generations; i ++){
+                    simulator.tournament(sampling);
+                    simulator.consolidateTournament();
+                    simulator.mutateGeneration(mutationRate);
+                    simulator.printCleanTournament();
+                    simulator.printCurrentGeneration();
+                }	
+            }
+            // Runnnig regerations no mutation and no crossing-over
+            else if(command.equals("rgnone"))
+            {
+           		// Number of generations
+                System.out.print("How many generations?: ");
+                command = terminalInput.nextLine();
+                int generations = Integer.parseInt(command);
+
+                // Sampling rate 
+                System.out.print("What is the tournament sampling rate?: ");
+                command = terminalInput.nextLine();
+                int sampling = Integer.parseInt(command);
+
+                simulator.printCurrentGeneration();
+                for(int i = 0; i < generations; i ++){
+                    simulator.tournament(sampling);
+                    simulator.consolidateTournament();
+                    simulator.printCleanTournament();
+                    simulator.increaseGeneration();
+                    simulator.printCurrentGeneration();
+                }	
+            }
+            // Runnnig regerations with crossingOver only
+            else if(command.equals("rgco"))
+            {
+                System.out.println("Crossing-over rate: " + crossingOverRate);
+                // Number of generations
+                System.out.print("How many generations?: ");
+                command = terminalInput.nextLine();
+                int generations = Integer.parseInt(command);
+
+                // Sampling rate 
+                System.out.print("What is the tournament sampling rate?: ");
+                command = terminalInput.nextLine();
+                int sampling = Integer.parseInt(command);
+
+                simulator.printCurrentGeneration();
+                for(int i = 0; i < generations; i ++){
+                    simulator.tournament(sampling);
+                    simulator.consolidateTournament();
+                    simulator.newGeneration(crossingOverRate, 0);
+                    simulator.printCleanTournament();
+                    simulator.printCurrentGeneration();
+                }	
             }
             else if(command.equals("export"))
             {
