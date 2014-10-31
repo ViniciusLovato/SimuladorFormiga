@@ -117,6 +117,62 @@ public class Simulator
     // Secondary fitness function to try a different aproach 
     // This function give smaller scores to the ants that find the fastest way to the leaf
     // The smallest score is the best
+    private void printPath(Ant ant)
+    {
+    	System.out.println("Inicio:");
+        ant.setPosX(colony.getPosX());
+        ant.setPosY(colony.getPosY());
+
+        int tmpx, tmpy;
+        boolean valid;
+
+        // the distance of the journey
+        ant.resetScore();
+
+        for (Integer i : ant.getMovementArray()){
+            // check whether or not the ant is at the leaf spot
+            if(!foundLeaf(ant))
+            {
+	            valid = false;
+
+	            tmpx = ant.getPosX();
+	            tmpy = ant.getPosY();
+
+	            // try to move the ant according to its movement array
+	            if(i == 0){
+	                tmpx += 1;
+	            }
+	            else if(i == 1){
+	                tmpx -= 1;
+	            }
+	            else if(i == 2){
+	                tmpy += 1;
+	            }
+	            else if(i == 3){
+	                tmpy -= 1;
+	            }
+
+	            // Validating the movement
+	            if(tmpx >= fieldWidth || tmpy >= fieldHeight || tmpx < 0 || tmpy < 0)
+	                valid = false; // not possible
+	            else
+	                valid = true; // valid movement
+
+	            // performing the movement
+	            if(valid){
+	            	System.out.println(ant.getPosX() + " " + ant.getPosY());
+	                ant.setPosY(tmpy);
+	                ant.setPosX(tmpx);
+	            }
+	            ant.increaseScore(1);
+            }
+        }
+        System.out.println("Fim:");
+    }
+
+    // Secondary fitness function to try a different aproach 
+    // This function give smaller scores to the ants that find the fastest way to the leaf
+    // The smallest score is the best
     private void fitness(Ant ant)
     {
         ant.setPosX(colony.getPosX());
@@ -363,6 +419,11 @@ public class Simulator
         }
     }
 
+    public Ant getAnt(int index)
+    {
+    	return(this.swarm.get(index));
+    }
+
     public int idGenerator(){
         return counter++;
     }
@@ -416,8 +477,8 @@ public class Simulator
                     simulator.tournament(sampling);
                     simulator.consolidateTournament();
                     simulator.newGeneration(crossingOverRate, mutationRate);
-                    //simulator.printCleanTournament();
-                    //simulator.printCurrentGeneration();
+                    simulator.printCleanTournament();
+                    simulator.printCurrentGeneration();
                 }
             }
             // Change mutation rate
@@ -501,6 +562,14 @@ public class Simulator
                     simulator.printCleanTournament();
                     simulator.printCurrentGeneration();
                 }	
+            }
+            else if(command.equals("lp"))
+            {
+            	System.out.print("What index?: ");
+                command = terminalInput.nextLine();
+                int index = Integer.parseInt(command);
+
+            	simulator.printPath(simulator.getAnt(index));
             }
             else if(command.equals("export"))
             {
