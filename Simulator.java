@@ -497,13 +497,14 @@ public class Simulator
                 if(valid){
                     if(i == posx && j == posy)
                         System.out.print(" A ");
+                    else if (i == colony.getPosX() && j == colony.getPosY())
+                        System.out.print(" C ");
+                    else if (i == leaf.getPosX() && j == leaf.getPosY())
+                        System.out.print(" L ");
+                    else
+                        System.out.print(" . ");
                 }
-                if (i == colony.getPosX() && j == colony.getPosY())
-                    System.out.print(" C ");
-                else if (i == leaf.getPosX() && j == leaf.getPosY())
-                    System.out.print(" L ");
-                else
-                    System.out.print(" . ");
+
 
             }
             System.out.println();
