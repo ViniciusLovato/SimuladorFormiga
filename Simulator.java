@@ -65,7 +65,7 @@ public class Simulator
         for(Ant ant : swarm){
             fitness(ant);
         }
-        summary();
+        //summary();
     }
 
     public void increaseGeneration()
@@ -114,51 +114,56 @@ public class Simulator
         System.out.println();	
     }
 
-    // moving ants
-    private void fitness(Ant ant){
-
+    // Secondary fitness function to try a different aproach 
+    // This function give smaller scores to the ants that find the fastest way to the leaf
+    // The smallest score is the best
+    private void fitness(Ant ant)
+    {
         ant.setPosX(colony.getPosX());
         ant.setPosY(colony.getPosY());
-
 
         int tmpx, tmpy;
         boolean valid;
 
+        // the distance of the journey
+        ant.resetScore();
+
         for (Integer i : ant.getMovementArray()){
             // check whether or not the ant is at the leaf spot
-            checkScore(ant);
+            if(!foundLeaf(ant))
+            {
+	            valid = false;
 
-            valid = false;
+	            tmpx = ant.getPosX();
+	            tmpy = ant.getPosY();
 
-            tmpx = ant.getPosX();
-            tmpy = ant.getPosY();
+	            // try to move the ant according to its movement array
+	            if(i == 0){
+	                tmpx += 1;
+	            }
+	            else if(i == 1){
+	                tmpx -= 1;
+	            }
+	            else if(i == 2){
+	                tmpy += 1;
+	            }
+	            else if(i == 3){
+	                tmpy -= 1;
+	            }
 
-            // try to move the ant according to its movement array
-            if(i == 0){
-                tmpx += 1;
+	            // Validating the movement
+	            if(tmpx >= fieldWidth || tmpy >= fieldHeight || tmpx < 0 || tmpy < 0)
+	                valid = false; // not possible
+	            else
+	                valid = true; // valid movement
+
+	            // performing the movement
+	            if(valid){
+	                ant.setPosY(tmpy);
+	                ant.setPosX(tmpx);
+	            }
+	            ant.increaseScore(1);
             }
-            else if(i == 1){
-                tmpx -= 1;
-            }
-            else if(i == 2){
-                tmpy += 1;
-            }
-            else if(i == 3){
-                tmpy -= 1;
-            }
-
-            // Validating the movement
-            if(tmpx >= fieldWidth || tmpy >= fieldHeight || tmpx < 0 || tmpy < 0)
-                valid = false; // not possible
-            else
-                valid = true; // valid movement
-
-            // performing the movement
-            if(valid){
-                ant.setPosY(tmpy);
-                ant.setPosX(tmpx);
-            }
-
         }
     }
 
@@ -167,6 +172,11 @@ public class Simulator
         if( (ant.getPosX() == this.leaf.getPosX()) && (ant.getPosY() == this.leaf.getPosY()) ){
             ant.increaseScore(1);
         }
+    }
+
+    // check whether or not the ant has eaten a leaf
+    private boolean foundLeaf(Ant ant){
+        return ( (ant.getPosX() == this.leaf.getPosX()) && (ant.getPosY() == this.leaf.getPosY()) );
     }
 
     // Printing results to a file
@@ -269,7 +279,7 @@ public class Simulator
             Collections.sort(selection);
 
             // Saving the best ant
-            this.tournament.add(selection.get(selection.size() - 1));
+            this.tournament.add(selection.get(0));
             selection.clear();
         }
 
@@ -281,7 +291,7 @@ public class Simulator
             System.out.print("[" + ant.getScore() + "]");
         }
         System.out.println("\n------------------------------------------------");
-        printTournamentToFile(sample);
+        //printTournamentToFile(sample);
 
 
     }
@@ -325,6 +335,7 @@ public class Simulator
 
     // Function that creates a new generation of ants, receives the crossing over rate as a parameter
     public void newGeneration(double crossingOverRate, double mutationRate){
+
         generation++;
 
         int mom;
@@ -332,7 +343,6 @@ public class Simulator
 
         double random;
 
-        int deltaAnts = 0;
         for(int i = 0; i < colony.getSize(); i++){
         	random = Math.random();
             if(Math.random() < crossingOverRate){
@@ -340,15 +350,17 @@ public class Simulator
                 dad = getRandomPosition(swarm.size());
 
                 swarm.add(new Ant(colony.getPosX(), colony.getPosY(), swarm.get(mom), swarm.get(dad), idGenerator(), mutationRate));
-
-                deltaAnts++;
             }
         }
 
-        Collections.sort(this.swarm);
-        // this.swarm.removeRange(0, deltaAnts - 1);
+        run();
 
-        swarm.subList(0, deltaAnts - 1).clear();
+        Collections.sort(this.swarm);
+
+        while(colony.getSize() < swarm.size())
+        {
+        	swarm.remove(colony.getSize());
+        }
     }
 
     public int idGenerator(){
@@ -404,8 +416,8 @@ public class Simulator
                     simulator.tournament(sampling);
                     simulator.consolidateTournament();
                     simulator.newGeneration(crossingOverRate, mutationRate);
-                    simulator.printCleanTournament();
-                    simulator.printCurrentGeneration();
+                    //simulator.printCleanTournament();
+                    //simulator.printCurrentGeneration();
                 }
             }
             // Change mutation rate
