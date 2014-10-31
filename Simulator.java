@@ -27,7 +27,7 @@ public class Simulator
     {	
         counter = 0;
         setFieldSize(15, 15);
-        colony = new Colony(1000);
+        colony = new Colony(50);
         leaf = new Leaf(getRandomPosition(this.fieldWidth), getRandomPosition(this.fieldHeight));
         swarm = new ArrayList<Ant>();
 
@@ -386,6 +386,8 @@ public class Simulator
         		swarm.get(i).generateMutation(mutationRate);
         }
 
+        run();
+
         Collections.sort(this.swarm);
     }
 
@@ -624,6 +626,7 @@ public class Simulator
                     simulator.consolidateTournament();
                     simulator.printCleanTournament();
                     simulator.increaseGeneration();
+                   	simulator.run();
                     simulator.printCurrentGeneration();
                 }	
             }
