@@ -428,6 +428,93 @@ public class Simulator
         return counter++;
     }
 
+    // Function that replays the movement of a specific ant
+    public boolean replay(int index)
+    {
+        if(index < this.swarm.size())
+        {
+            ArrayList<Integer> movement = this.swarm.get(index).getMovementArray();
+
+            // Getting the colony position
+            int xreplay = colony.getPosX();
+            int yreplay = colony.getPosY();
+
+            for(Integer i : movement)
+            {
+            // Parsing the movement
+            if(i == 0)
+                xreplay += 1;
+            else if(i == 1)
+                xreplay -= 1;
+            else if(i == 2)
+                yreplay += 1;
+            else if(i == 3)
+                yreplay -= 1;
+
+            // Printing the field
+            if(xreplay == leaf.getPosX() && yreplay == leaf.getPosY()){
+                    return true;
+            }
+            else
+            {
+                print(xreplay, yreplay);
+            }
+            
+
+            // Waiting  400ms
+            try{
+                Thread.sleep(400);
+            }catch(InterruptedException ex)
+            {
+                Thread.currentThread().interrupt();
+            }
+            }
+        }
+        // Invalid index 
+        else
+        {
+            System.out.println("Invalid index!");
+        }
+        return false;
+    }
+
+    public void print(int posx, int posy)
+    {
+
+        Boolean valid;
+        for(int i = 0; i < fieldWidth; i++)
+        {
+            for(int j = 0; j < fieldHeight; j++)
+            {   
+                valid = false;
+                // Validating the movement
+                if(posx >= fieldWidth || posy >= fieldHeight || posx < 0 || posy < 0)
+                    valid = false; // not possible
+                else
+                    valid = true; // valid movement
+
+                // performing the movement
+                if(valid){
+                    if(i == posx && j == posy)
+                        System.out.print(" A ");
+                }
+                if (i == colony.getPosX() && j == colony.getPosY())
+                    System.out.print(" C ");
+                else if (i == leaf.getPosX() && j == leaf.getPosY())
+                    System.out.print(" L ");
+                else
+                    System.out.print(" . ");
+
+            }
+            System.out.println();
+        }
+        System.out.println();        
+        System.out.println("Colony position:\t(" + colony.getPosX() + ", " + colony.getPosX() + ")");
+        System.out.println("Ant position:\t\t(" + posx + ", " + posy + ")");
+        System.out.println("Leaf position:\t\t(" + leaf.getPosX() + ", " + leaf.getPosY() + ")");
+    }
+
+
     public static void main(String Args[])
     {
         Simulator simulator = new Simulator();
@@ -576,6 +663,13 @@ public class Simulator
                 System.out.print("Exporting...");
                 simulator.exportAnts();
                 System.out.println("done");
+            }
+            else if(command.equals("replay"))
+            {
+                System.out.print("Which Ant?: ");
+                command = terminalInput.nextLine();
+                int selected_ant = Integer.parseInt(command);
+                simulator.replay(selected_ant);
             }
         }
         while(!command.equals("quit"));
