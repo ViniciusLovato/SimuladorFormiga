@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en" class="doc">
+<head>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+
+	<link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="static/bootstrap/css/bootstrap-theme.min.css">
+
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="static/js/jquery-1.11.1.js"></script>
+	<script src="static/js/pageScroll.js"></script>	
+
+	<script src="static/bootstrap/js/bootstrap.min.js"></script>
+
+	<meta charset="UTF-8">
+	<title>Relátorio de Sistemas Evolutivos</title>
+
+</head>
+<body>
+
+    <nav id="top" class="navbar navbar-inverse navbar" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Sistemas Evolutivos Aplicados a Robótica</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a class="scrollnav" href="#intro">Introdução</a></li>
+            <li><a class="scrollnav" href="#implement">Detalhes Implementação</a></li>
+            <li><a class="scrollnav" href="#result">Resultados</a></li>
+            <li><a class="scrollnav" href="#analise">Análise</a></li>
+            <li><a class="scrollnav" href="#finais">Considerações finais</a></li>
+            <li><a class="scrollnav" href="#instrucao">Compilação</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+   <div class="container" id="accordion">
+	
+			<div>
+				<h4 class="text-center">Projeto Desenvolvido por:</h4>
+
+				<p class="text-center">Marcelo Koti Kamada</p>
+				<p class="text-center">Matheus Doretto Compri</p>
+				<p class="text-center">Vinicius Alvarenga Lovato</p>
+			
+			</div>
+   			<div id="intro">
+   				<div class="page-header">
+			   		<h2 class="text-center">Introdução</h2>
+      			</div>
+
+      			<div id="collapse_intro">
+					<p>O objetivo desse trabalho foi desenvolver um algoritmo evolutivo que fosse capaz de resolver um problema relativo a otimização de caminho.</p>
+					<p>Para isso foi criado um simulador de colonia de formigas com as seguintes características</p>
+
+					<ul>
+						<li>O mapa é represtando por uma matriz quadrada.</li>
+						<li>O mapa contém uma colonia (Local onde as formigas iniciam a jornada) além de uma posição que contem a comida (Local onde as formigas ganham pontos ao passar)</li>
+						<li>Cada formiga a princípio anda de forma completamente aleatória, respeitando os limites do mapa</li>
+						<li>As formigas possuem um número máximo de passos que elas podem efetuar, caracterziando seu tempo de vida</li>
+						<li>Após todas as formigas terminarem seu tempo de vida, são avaliadas por uma função de fitness e posteriormente uma nova geração surge baseado nas formigas antigas (O Método utilizado será explicado em detalhes posteriormente)</li>
+					</ul>
+      			</div>
+
+			</div>
+
+			<div>
+						
+   				<div class="page-header">
+			   		<h2 class="text-center">Métodos Utilizados</h2>
+      			</div>
+				
+				<p>No decorrer do desenvolvimento percebemos que o approach inicial era falho em alguns aspectos e poderia ser melhorado para então obtermos melhores resultados:</p>
+				<ul>
+					<li>A pontuação da formiga era baseada no número de vezes que ela passava pela comida</li>
+					<li>A pontuação da formiga era baseada no número de passos que a formiga gastou para encontrar a comida</li>
+				</ul>		
+   					
+		   		<h4 class="text-center">Primeiro Approach</h4>
+      	
+			
+				<p>A primeira solução apesar bem definida, era complexa e envolvia muita problemas a serem considerados, como por exemplo: a formiga poderia levar muito tempo para encontrar a comida, porém passava multiplas poderia ganhar mais pontos que uma formiga que encontra-se um caminho curto mas passa-se menos vezes, apesar da segunda ter um maior potencial futuro (Pois em um menor periodo de sua vida ela ja encontrou comida).</p>
+				<p>Combinar soluções dessa forma é bastante complicado uma vez que o ponto de corte é complexo, pois a soluçnao perfeita seria a formiga chegar o mais rapido possivel na comida e ficar o mais tempo possível ao redor dela.</p>
+				<p>Dessa forma a evolução não ocorria de forma satisfatória, muitas vezes o algoritmo convergia muito antes de encontrar uma solução satisfatória.</p>
+   				
+		   		<h4 class="text-center">Segundo Approach</h4>
+
+				<p>Baseado nas dificuldades encontrados na primeira proposta de solução remodelamos a função de fitness para pontuas as formigas que chegassem mais rápido a comida. Essa simplificação fez com que os resultados obtidos evoluissem de forma mais rápida e consistente.</p>
+				<!--<button type="button" class="btn btn-sm btn-primary">Topo</button></a>-->
+				
+			</div>
+
+			<div id="implement">
+
+   				<div class="page-header">
+					<h2 class="text-center">Detalhes da implementação</h2>
+      			</div>
+				<h4>Inicialização do vetor de formigas</h4>
+				<p>Cada formiga possui um vetor de caminho que é inicializado de forma aleatória. Quando o vetor é criado, não é verificado se o caminho levará a formiga para fora das extremidades do mapa. Essa verificação é realizada na função de fitness, que apenas descarta os moviemtos que violam as restrições do mapa</p>
+				<p>Inicialmente eram geradas 1000 formigas.</p>
+				<p>Notamos que quando eram gerados muitos individuos, geralmente, um individuo com qualidades excepcionais era gerado, e este era normalmente muito proximo da solução ideal do problema; o que nao deixava margem para os algoritmos evolutivos mostrarem seu potencial.</p>
+				<p>Desta forma, optamos pela drástica diminuição do numero de formigas para 50.</p>
+				
+				<h4>Função de Fitness</h4>
+				<p>A função de fitness tem a funcionalidade de pontuar da melhor forma a formiga que encontra o menor caminho partindo da colônia até a comida.</p>
+				<p>A Cada passo que a formiga realiza seu score é aumentado de um ponto. Consequentemente, a melhor formiga da geração é a que possui menor quantidade de pontos.</p>
+
+				<h4>Seleção</h4>
+				<p>Foi utilizado método torneio para selecionar as melhores formigas de cada geração. Múltiplos tamanhos de torneio foram testados e as seguintes características foram observadas:</p>
+				<ul>
+					<li>Torneio de tamanho muito pequeno resultam em uma convergencia mais lenta, porém normalmente garantem uma maior variabilidade genética. Entretanto formigas com fitness alto podem não ser selecionadas ocasionando a perda de indíviduos promissores.</li>
+					<li>Torneio de tamanho grande resultem em uma convergencia mais rápida mas em contrapartida pode gerar um elitismo indesejado.</li>
+				</ul>
+				<p>Diversos testes foram realizados que podem ser conferidos nesse <a href="#tamTorneios">link</a>. Em resumo notamos que a melhor relação convergercia/variabilidade ocorria (para este problema) quando utilizamos torneios de tamanho 8.</p>
+				
+				<h4>Crossing-Over</h4>
+				<p>Nosso algoritmo de crossing-over divide o gene (vetor de caminhos da formiga) em duas partes, no qual o ponto de corte é decidido de forma aleatória. Os individuos são selecionados de forma aleatória para o cruzamento; e são cruzados com uma probabilidade de 70%.</p>
+
+				<h4>Mutação</h4>
+				<p>A mutação atua em cada alelo do gene (cada posição do vetor de caminho), alterando o seu valor para um dos 4 valores possíveis (quatro direções) com probabilidade padrão de 10%.</p>	
+				<!--<button type="button" class="btn btn-sm btn-primary">Topo</button></a>-->
+				
+			</div>	
+				<div class="resultados">
+
+   				<div class="page-header">
+					<h2 id="result" class="text-center">Resultados obtidos</h2>
+      			</div>
+				<!--<p>Os links abaixo, levam aos gráficos obtidos com diversos parametros</p>-->
+				
+				<div class="row">
+					<div class="col-sm-15" id="accordion_1">
+
+						<h4 id="tamTorneios" class="text-center">Múltiplos tamanhos de torneio</h4>
+						<div class="list-group" style="margi-left: 30%">
+							<h5 class="list-group-item active text-center" >Tamanhos</h5>
+							
+							<!-- Torneio de tamanho 2-->
+							<a href="#collapse_t2" data-toggle="collapse" data-parent="accordion_1" class="list-group-item text-center">Gráficos de Torneio de tamanho	2</a>
+							<div id="collapse_t2" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_1_1">
+
+									<a href="#collapse_in_t1g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_t1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_t2g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_t2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_t3g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_t3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_t4g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_t4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_t5g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_t5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_t6g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_t6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_t7g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_t7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_t8g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_t8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_t9g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_t9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_t10g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_t10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/2/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/2/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Torneio de tamanho 8-->
+							<a href="#collapse_t4" data-toggle="collapse" data-parent="accordion_1" class="list-group-item text-center">Gráficos de Torneio de tamanho	8</a>
+							<div id="collapse_t4" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_1_1">
+
+									<a href="#collapse_in_4t1g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_4t1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_4t2g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_4t2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_4t3g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_4t3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_4t4g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_4t4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_4t5g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_4t5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_4t6g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_4t6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_4t7g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_4t7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_4t8g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_4t8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_4t9g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_4t9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_4t10g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_4t10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/8/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/8/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							
+							<!-- Torneio de tamanho 16-->
+							<a href="#collapse_t16" data-toggle="collapse" data-parent="accordion_1" class="list-group-item text-center">Gráficos de Torneio de tamanho	16</a>
+							<div id="collapse_t16" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_1_1">
+
+									<a href="#collapse_in_16t1g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_16t1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_16t2g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_16t2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_16t3g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_16t3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_16t4g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_16t4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_16t5g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_16t5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_16t6g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_16t6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_16t7g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_16t7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_16t8g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_16t8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_16t9g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_16t9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_16t10g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_16t10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/16/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/16/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Torneio de tamanho 32-->
+							<a href="#collapse_t32" data-toggle="collapse" data-parent="accordion_1" class="list-group-item text-center">Gráficos de Torneio de tamanho	32</a>
+							<div id="collapse_t32" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_1_1">
+
+									<a href="#collapse_in_32t1g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_32t1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_32t2g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_32t2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_32t3g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_32t3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_32t4g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_32t4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_32t5g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_32t5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_32t6g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_32t6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_32t7g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_32t7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_32t8g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_32t8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_32t9g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_32t9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_32t10g" data-toggle="collapse" data-parent="accordion_1_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_32t10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Torneio/32/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Torneio/32/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>					
+				</div>
+
+
+
+				<!-- Tabela da Mutação -->
+				<div class="row">
+					<div class="col-sm-15" id="accordion_2">
+						<h4 class="text-center">Diversos valores de mutação</h4>
+						
+						<div class="list-group">
+							<h5 class="list-group-item active text-center">Crossing-over fixo em 70% e torneio de 8</h5>
+						
+							<!-- Taxa de Mutação 1%-->
+							<a href="#collapse_m1" data-toggle="collapse" data-parent="accordion_2" class="list-group-item text-center">Gráficos quando a taxa de mutação é	 1%</a>
+							<div id="collapse_m1" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_2_1">
+
+									<a href="#collapse_in_m1g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_m1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_m2g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_m2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_m3g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_m3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_m4g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_m4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_m5g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_m5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_m6g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_m6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_m7g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_m7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_m8g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_m8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_m9g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_m9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_m10g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_m10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/01/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/01/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Taxa de Mutação 5%-->
+							<a href="#collapse_m5" data-toggle="collapse" data-parent="accordion_2" class="list-group-item text-center">Gráficos quando a taxa de mutação é	 5%</a>
+							<div id="collapse_m5" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_2_1">
+
+									<a href="#collapse_in_5m1g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_5m1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_5m2g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_5m2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_5m3g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_5m3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_5m4g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_5m4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_5m5g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_5m5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_5m6g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_5m6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_5m7g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_5m7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_5m8g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_5m8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_5m9g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_5m9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_5m10g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_5m10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/05/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/05/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Taxa de Mutação 10%-->
+							<a href="#collapse_m10" data-toggle="collapse" data-parent="accordion_2" class="list-group-item text-center">Gráficos quando a taxa de mutação é	 10%</a>
+							<div id="collapse_m10" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_2_1">
+
+									<a href="#collapse_in_10m1g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_10m1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_10m2g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_10m2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_10m3g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_10m3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_10m4g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_10m4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_10m5g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_10m5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_10m6g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_10m6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_10m7g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_10m7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_10m8g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_10m8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_10m9g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_10m9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_10m10g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_10m10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/10/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/10/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Taxa de Mutação 20%-->
+							<a href="#collapse_m20" data-toggle="collapse" data-parent="accordion_2" class="list-group-item text-center">Gráficos quando a taxa de mutação é	 20%</a>
+							<div id="collapse_m20" class="accordion-body collapse">
+								
+								<div class="col-sm-15" id="accordion_2_1">
+
+									<a href="#collapse_in_20m1g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Geração Zero</a>	
+									<div id="collapse_in_20m1g" class="accordion-body collapse">
+										<h4 class="text-center">Histograma da geração inicial</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao0.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+										</div>									
+									</div>
+
+									<a href="#collapse_in_20m2g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Primeira Geração</a>	
+									<div id="collapse_in_20m2g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao1.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade1.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>		
+									</div>
+
+									<a href="#collapse_in_20m3g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Segunda Geração</a>	
+									<div id="collapse_in_20m3g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao2.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade2.png" alt="geracao0" height="50%" width="50%" style="float: left">
+
+										</div>	
+									</div>
+
+									<a href="#collapse_in_20m4g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Terceira Geração</a>	
+									<div id="collapse_in_20m4g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao3.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade3.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_20m5g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quarta Geração</a>	
+									<div id="collapse_in_20m5g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao4.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade4.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_20m6g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Quinta Geração</a>	
+									<div id="collapse_in_20m6g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao5.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade5.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>	
+									</div>
+
+									<a href="#collapse_in_20m7g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sexta Geração</a>	
+									<div id="collapse_in_20m7g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao6.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade6.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_20m8g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Sétima Geração</a>	
+									<div id="collapse_in_20m8g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao7.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade7.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+
+									<a href="#collapse_in_20m9g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Oitava Geração</a>	
+									<div id="collapse_in_20m9g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao8.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade8.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+
+									<a href="#collapse_in_20m10g" data-toggle="collapse" data-parent="accordion_2_1" class="list-group-item text-center">Nona Geração</a>	
+									<div id="collapse_in_20m10g" class="accordion-body collapse">
+										<h4 class="text-center">Geração com repetição(Esquerda) : Geração sem repetição(Direta)</h4>
+										<div class="row">
+											<img src="static/media/Mutacao/20/generacao9.png" alt="geracao0" height="50%" width="50%" style="float: left" >
+											<img src="static/media/Mutacao/20/variabilidade9.png" alt="geracao0" height="50%" width="50%" style="float: left">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-15">
+						<h4 class="text-center">Diversas taxas de crossing-over</h4>
+						
+						<div class="list-group">
+							<h5 class="list-group-item active text-center">Taxa de mutação fixa em 10% e torneio de 8</h5>
+							<a href="static/media/CrossingOver/05" class="list-group-item text-center">Gráficos quando a taxa de crossing-over é	50%</a>
+							<a href="static/media/CrossingOver/07" class="list-group-item text-center">Gráficos quando a taxa de crossing-over é	70%</a>
+							<a href="static/media/CrossingOver/09" class="list-group-item text-center">Gráficos quando a taxa de crossing-over é	90%</a>
+							<a href="static/media/CrossingOver/10" class="list-group-item text-center">Gráficos quando a taxa de crossing-over é	100%</a>
+						</div>					
+					</div>
+				</div>
+				<!--<button type="button" class="btn btn-sm btn-primary">Topo</button></a>-->
+				
+			</div>
+
+			<div class="analise">
+
+   				<div class="page-header">
+					<h2 id="analise" class="text-center">Análise da evolução</h2>
+      			</div>
+				
+				<p>Nesta seção discutiremos o impacto de cada componente (crossing-over e mutação) na obtenção da solução ideal.</p>
+				
+				<div class="row">
+					<div class="col-sm-15">
+						<div class="list-group">
+							<h5 class="list-group-item active text-center">Resultados apenas com Crossing-over</h5>
+							<a href="" class="list-group-item text-center">Gráfico contendo apenas crossing-over</a>
+						</div>					
+					</div>
+				</div>
+				<p>Podemos notar que a apenas com o crossing-over não foi possível encontrar a solução ótima, isso acontece pois a mutação que foi removida era responsável por gerar pequenas alterações dos genes causando maior variablidade genética. Essas pequenas alterações serviam como um fino ajuste para maximizar a solução final</p>
+
+				<div class="row">
+					<div class="col-sm-15">
+						<div class="list-group">
+							<h5 class="list-group-item active text-center">Resultados apenas com Mutação</h5>
+							<a href="" class="list-group-item text-center">Gráfico contendo apenas mutação</a>
+						</div>					
+					</div>
+				</div>
+				<p>Nota-se que apenas com a mutação os resultados obtidos não convergem com o passar das gerações, pois soluções boas sofrem mutações e se transformam em soluções ruins; assim como soluções ruins sofrem o processo oposto.</p>
+
+
+
+				<div class="row">
+					<div class="col-sm-15">
+						<div class="list-group">
+							<h5 class="list-group-item active text-center">Resultados apenas com torneio</h5>
+							<a href="" class="list-group-item text-center">Gráfico contendo apenas torneio</a>
+
+						</div>
+					</div>
+				</div>
+				<h4></h4>
+				<p>Como não existe mutação e crossing-over o resultado encontrado é na melhor das hipóteses o melhor indivíduo gerado na primeira geração.</p>
+			</div>
+			
+			<div class="finais">
+				<div id="finais" class="page-header">
+					<h2 class="text-center">Considerações finais</h2>
+				</div>
+				<p>Através dos testes podemos concluir que cada passo no algoritmo (Torneio, crossing-over e mutação) é fundamental para a obtenção de uma reposta satisfatória.</p>	
+			</div>   	
+
+			<div class="instrucao">
+				<div class="page-header">
+					<h2 id="instrucao" class="text-center">Instruções de compilação</h2>
+				</div>
+			</div>   	
+   </div>
+
+	
+</body>
+</html>
